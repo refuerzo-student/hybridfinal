@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#FAFAFA]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYBRID-RECOVER | Enterprise Disaster Recovery</title>
+    
+    <!-- Tailwind CSS Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icon Suite -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts: Plus Jakarta Sans, Lora, & Space Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Application Styling -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-full text-slate-800 font-sans flex overflow-hidden antialiased bg-[#FAFAFA] selection:bg-slate-200">
+
+    <!-- LEFT NAVIGATION BAR -->
+    <aside class="w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between z-20 shrink-0">
+        <div class="px-5 py-6">
+            <!-- Corporate Brand -->
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <div class="w-7 h-7 bg-slate-900 rounded flex items-center justify-center text-white text-xs font-bold font-mono">
+                    H
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm tracking-tight text-slate-900">
+                        HYBRID<span class="text-slate-500 font-normal">RECOVER</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Enterprise Ops</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-1">
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2 font-mono">Navigation</div>
+                
+                <button onclick="switchTab('dashboard', this)" class="nav-btn active-nav w-full flex items-center justify-between px-3 py-2 rounded-md transition-all text-xs font-medium text-slate-700 hover:bg-slate-50">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-layer-group text-slate-400 text-xs w-4"></i>
+                        <span>System Overview</span>
+                    </div>
+                </button>
+
+                <button onclick="switchTab('recovery', this)" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-slate-600 hover:bg-slate-50 transition-all text-xs font-medium">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-[#1e293b] fa-sliders text-slate-400 text-xs w-4"></i>
+                        <span>Recovery Engine</span>
+                    </div>
+                </button>
+
+                <button onclick="switchTab('approvals', this)" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-slate-600 hover:bg-slate-50 transition-all text-xs font-medium">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-shield-halved text-slate-400 text-xs w-4"></i>
+                        <span>Four-Eyes Authorization</span>
+                    </div>
+                    <span id="approvalBadge" class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-mono px-1.5 py-0.2 rounded font-semibold">1</span>
+                </button>
+
+                <button onclick="switchTab('audit', this)" class="nav-btn w-full flex items-center justify-between px-3 py-2 rounded-md text-slate-600 hover:bg-slate-50 transition-all text-xs font-medium">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-list-check text-slate-400 text-xs w-4"></i>
+                        <span>Audit Log</span>
+                    </div>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Role Access Controller -->
+        <div class="p-4 border-t border-slate-100 bg-[#FAF9F6]">
+            <label for="roleSelector" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5 font-mono">Account Profile</label>
+            <div class="relative">
+                <select id="roleSelector" onchange="switchRole(this.value)" class="w-full bg-white border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-700 font-medium focus:outline-none focus:border-slate-400 appearance-none cursor-pointer">
+                    <option value="RALPH">Ralph (IT Specialist)</option>
+                    <option value="NICOLAS">Nicolas (Help Desk Agent)</option>
+                    <option value="GABRIEL">Gabriel (Cloud Manager)</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-2.5 top-2.5 text-[10px] text-slate-400 pointer-events-none"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN APP CANVAS -->
+    <div class="flex-1 flex flex-col min-w-0 relative overflow-hidden">
+
+        <!-- TOP BAR HEADER -->
+        <header class="h-14 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between shrink-0">
+            <div class="flex items-center space-x-3">
+                <span id="pageTitle" class="text-sm font-semibold text-slate-900">System Overview</span>
+                <span class="text-slate-300">/</span>
+                <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-500 font-mono">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Zero-Trust Enforced
+                </span>
+            </div>
+
+            <div class="flex items-center space-x-6 text-xs">
+                <!-- Sandbox Testing Control -->
+                <div id="exceptionSwitchContainer" class="flex items-center space-x-2">
+                    <span class="text-slate-500 text-[11px]">Integrity Exception Switch:</span>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="simulateIntegrityFailure" class="sr-only peer">
+                        <div class="w-7 h-3.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-2.5 after:w-2.5 after:transition-all peer-checked:bg-slate-800 relative"></div>
+                    </label>
+                    <span id="exceptionSwitchHint" class="text-[10px] text-slate-400" title="Restricted to Cloud Manager role. Requires confirmation with reason.">i</span>
+                </div>
+
+                <!-- Active User Identity -->
+                <div class="flex items-center space-x-2.5 border-l border-slate-200 pl-5">
+                    <div class="w-6 h-6 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-xs font-mono font-bold">
+                        R
+                    </div>
+                    <div>
+                        <div id="currentUserDisplay" class="font-semibold text-slate-800 text-xs">ralph.it_spec@corp.internal</div>
+                        <div id="currentRoleBadge" class="text-[10px] text-slate-400 font-mono">IT Specialist</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DYNAMIC CONTENT CANVAS -->
+        <main class="flex-1 p-8 overflow-y-auto relative z-10">
+
+            <!-- VIEW 1: SYSTEM DASHBOARD -->
+            <section id="tab-dashboard" class="tab-panel active-panel space-y-6 max-w-6xl mx-auto">
+                
+                <!-- Role Alert Banner -->
+                <div id="roleScopedBanner" class="hidden bg-slate-50 border border-slate-200 text-slate-700 p-3.5 rounded text-xs flex items-center gap-3">
+                    <i class="fa-solid fa-circle-info text-slate-500 text-sm"></i>
+                    <div id="roleScopedBannerText"></div>
+                </div>
+
+                <!-- Key Telemetry Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white border border-slate-200/80 p-4 rounded">
+                        <div class="text-[11px] text-slate-400 font-mono uppercase tracking-wider mb-1">Active Nodes</div>
+                        <div class="text-xl font-bold text-slate-900">4 Operational</div>
+                    </div>
+                    <div class="bg-white border border-slate-200/80 p-4 rounded">
+                        <div class="text-[11px] text-slate-400 font-mono uppercase tracking-wider mb-1">KMS Integration</div>
+                        <div class="text-xl font-bold text-slate-900 flex items-center gap-1.5">
+                            Hardware KMS
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-200/80 p-4 rounded">
+                        <div class="text-[11px] text-slate-400 font-mono uppercase tracking-wider mb-1">Immutable Checkpoints</div>
+                        <div class="text-xl font-bold text-slate-900">142 Snapshots</div>
+                    </div>
+                    <div class="bg-white border border-slate-200/80 p-4 rounded">
+                        <div class="text-[11px] text-slate-400 font-mono uppercase tracking-wider mb-1">Approval Queue</div>
+                        <div class="text-xl font-bold text-amber-700">1 Pending Action</div>
+                    </div>
+                </div>
+
+                <!-- Infrastructure Overview Grid -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center border-b border-slate-200/60 pb-2">
+                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest font-mono">Infrastructure Nodes</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Target AWS Node -->
+                        <div class="bg-white border border-slate-200/80 rounded p-5 space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider border border-slate-200 px-1.5 py-0.5 rounded bg-slate-50">Production Target</span>
+                                    <h4 class="text-base font-bold text-slate-900 mt-1">DB-PAYMENTS-AWS</h4>
+                                    <p class="text-xs text-slate-400 font-mono">us-east-1 | PostgreSQL 15.2</p>
+                                </div>
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 mt-1"></span>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2 text-xs bg-[#FAF9F6] p-3 rounded border border-slate-100 font-mono">
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Encryption</span>
+                                    <span class="text-slate-700">AES-256</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Snapshot</span>
+                                    <span class="text-slate-700">10m ago</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Integrity</span>
+                                    <span class="text-emerald-700 font-semibold" id="integrityAWS">Valid</span>
+                                </div>
+                            </div>
+
+                            <button onclick="quickSelectAndRecover('DB-PAYMENTS-AWS')" class="action-btn w-full bg-slate-900 hover:bg-slate-800 text-white text-xs py-2 rounded font-medium transition-all" title="Restricted: IT Specialists only. Request access from your Cloud Manager.">
+                                Configure Recovery
+                            </button>
+                            <p class="restriction-note text-[11px] hidden mt-1.5 leading-snug" data-restriction-for="request"></p>
+                        </div>
+
+                        <!-- Local Target Node -->
+                        <div class="bg-white border border-slate-200/80 rounded p-5 space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider border border-slate-200 px-1.5 py-0.5 rounded bg-slate-50">Staging Target</span>
+                                    <h4 class="text-base font-bold text-slate-900 mt-1">DB-STAGE-LOCAL</h4>
+                                    <p class="text-xs text-slate-400 font-mono">On-Prem Rack B | MySQL 8.0</p>
+                                </div>
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 mt-1"></span>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2 text-xs bg-[#FAF9F6] p-3 rounded border border-slate-100 font-mono">
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Encryption</span>
+                                    <span class="text-slate-700">AES-256</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Snapshot</span>
+                                    <span class="text-slate-700">2h ago</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 text-[10px] block">Integrity</span>
+                                    <span class="text-emerald-700 font-semibold" id="integrityStage">Valid</span>
+                                </div>
+                            </div>
+
+                            <button onclick="quickSelectAndRecover('DB-STAGE-LOCAL')" class="action-btn w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs py-2 rounded font-medium transition-all" title="Restricted: IT Specialists only. Request access from your Cloud Manager.">
+                                Configure Recovery
+                            </button>
+                            <p class="restriction-note text-[11px] hidden mt-1.5 leading-snug" data-restriction-for="request"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: RECOVERY ENGINE -->
+            <section id="tab-recovery" class="tab-panel hidden space-y-5 max-w-4xl mx-auto">
+                <div class="bg-white border border-slate-200/80 rounded p-6 space-y-5">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h3 class="text-base font-bold text-slate-900">Recovery Configurator</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Automated snapshot transfer and decryption pipeline.</p>
+                    </div>
+
+                    <!-- Layout Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Direction Selection -->
+                        <div class="space-y-1.5">
+                            <label for="recoveryDirection" class="text-[11px] font-bold text-slate-600 block uppercase tracking-wider font-mono">Source to Target Path</label>
+                            <select id="recoveryDirection" class="w-full bg-white border border-slate-200 rounded p-2 text-xs text-slate-800 font-medium focus:outline-none focus:border-slate-400">
+                                <option value="CLOUD_TO_LOCAL">Cloud Repository to On-Prem Target</option>
+                                <option value="LOCAL_TO_CLOUD">On-Prem Repository to Cloud Target</option>
+                            </select>
+                        </div>
+
+                        <!-- Target Destination Selector -->
+                        <div id="targetEnvCard" class="space-y-1.5">
+                            <label for="targetDestination" class="text-[11px] font-bold text-slate-600 block uppercase tracking-wider font-mono">Target Database Target</label>
+                            <select id="targetDestination" onchange="updateTargetSafetyUI()" class="w-full bg-white border border-slate-200 rounded p-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-slate-400">
+                                <option value="PROD_LIVE">PRODUCTION: Live Database (DB-PAYMENTS-AWS)</option>
+                                <option value="STAGING">STAGING: Isolated Instance (DB-STAGE-LOCAL)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="targetSafetyWarning" class="text-xs text-amber-800 bg-amber-50/60 border border-amber-200/80 p-3 rounded font-serif italic">
+                        Overwriting live PRODUCTION databases requires Four-Eyes authorization approval from a Cloud Manager who is not the requester.
+                    </div>
+
+                    <!-- Integrity Status Banner -->
+                    <div id="integrityStatusBanner" class="hidden"></div>
+
+                    <!-- Snapshot Selection Table -->
+                    <div class="space-y-2">
+                        <h4 class="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-mono">Verified Checkpoint</h4>
+                        <div class="border border-slate-200 rounded overflow-hidden">
+                            <table id="snapshotTable" class="w-full text-left text-xs font-mono">
+                                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 text-[11px]">
+                                    <tr>
+                                        <th class="p-2.5">Select</th>
+                                        <th class="p-2.5">Snapshot ID</th>
+                                        <th class="p-2.5">Timestamp</th>
+                                        <th class="p-2.5">Size</th>
+                                        <th class="p-2.5">Integrity Verification</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="snapshotTableBody" class="divide-y divide-slate-100">
+                                    <tr>
+                                        <td class="p-2.5"><input type="radio" name="snapshot" checked value="SNAP-2026-0911-01" class="accent-slate-900"></td>
+                                        <td class="p-2.5 text-slate-900 font-bold">SNAP-2026-0911-01</td>
+                                        <td class="p-2.5 text-slate-600">2026-09-11 21:30:00 UTC</td>
+                                        <td class="p-2.5 text-slate-600">42.8 GB</td>
+                                        <td class="p-2.5 text-emerald-700 font-bold">SHA-256 Validated</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <button onclick="triggerRecoveryProcess()" class="action-btn w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded font-medium text-xs transition-all flex justify-center items-center gap-2" title="Restricted: IT Specialists only. Request access from your Cloud Manager.">
+                        <span>Initiate Automated Recovery</span>
+                    </button>
+                    <p class="restriction-note text-[11px] hidden mt-1.5 leading-snug" data-restriction-for="request"></p>
+                </div>
+            </section>
+
+            <!-- VIEW 3: DUAL CONTROL QUEUE -->
+            <section id="tab-approvals" class="tab-panel hidden space-y-5 max-w-3xl mx-auto">
+                <div id="approvalsContainer" class="space-y-5"></div>
+            </section>
+
+            <!-- VIEW 4: AUDIT LOGS -->
+            <section id="tab-audit" class="tab-panel hidden space-y-4 max-w-6xl mx-auto">
+                <div class="bg-white border border-slate-200/80 rounded p-5 space-y-3">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <h3 class="text-sm font-bold text-slate-900">System Audit Log</h3>
+                        <span class="text-[10px] font-mono bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded">Tamper-Evident</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs font-mono table-fixed">
+                            <colgroup>
+                                <col class="w-[14%]">
+                                <col class="w-[20%]">
+                                <col class="w-[19%]">
+                                <col class="w-[19%]">
+                                <col class="w-[18%]">
+                                <col class="w-[10%]">
+                            </colgroup>
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 text-[11px]">
+                                <tr>
+                                    <th class="p-2.5">Log ID</th>
+                                    <th class="p-2.5">Timestamp</th>
+                                    <th class="p-2.5">Requester</th>
+                                    <th class="p-2.5">Approver</th>
+                                    <th class="p-2.5">Status</th>
+                                    <th class="p-2.5">Signature Hash</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXECUTION MODAL -->
+            <div id="executionOverlay" class="hidden fixed inset-0 bg-slate-900/30 backdrop-blur-[2px] z-50 flex items-center justify-center p-4">
+                <div class="modal-card bg-white border border-slate-200 rounded p-6 max-w-lg w-full max-h-[80vh] flex flex-col shadow-lg">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3 shrink-0">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900">Automated Pipeline Execution</h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Sequential cryptographically signed operation</p>
+                        </div>
+                        <span id="overallStatusBadge" class="bg-slate-100 text-slate-700 text-[10px] font-mono px-2 py-0.5 rounded border border-slate-200">EXECUTING</span>
+                    </div>
+
+                    <!-- Scrollable Steps Section -->
+                    <div class="space-y-2 text-xs font-mono overflow-y-auto flex-1 min-h-0 py-1">
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200/60 flex items-center justify-between min-h-[50px]">
+                            <span class="text-slate-700">1. Key Retrieval (KMS)</span>
+                            <span id="badgeStep1" class="text-slate-500">Processing...</span>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200/60 flex items-center justify-between min-h-[50px]">
+                            <span class="text-slate-700">2. Checksum Hash Validation</span>
+                            <span id="badgeStep2" class="text-slate-400">Pending</span>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200/60 flex items-center justify-between min-h-[50px]">
+                            <span class="text-slate-700">3. Target Instance Mounting</span>
+                            <span id="badgeStep3" class="text-slate-400">Pending</span>
+                        </div>
+                    </div>
+
+                    <!-- Exception Notification (sticky at bottom, always visible) -->
+                    <div id="exceptionAlert" class="hidden bg-red-50 border border-red-200 rounded p-3 text-xs space-y-2 shrink-0">
+                        <div class="font-bold text-red-800 flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
+                            Execution Guardrail Halted Process
+                        </div>
+                        <p id="exceptionMessage" class="text-red-700 font-serif italic"></p>
+                        <button onclick="closeExecutionOverlay()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs px-3 py-1.5 rounded font-medium mt-1 w-full">
+                            Acknowledge & Abort
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Javascript Controller -->
+    <script src="app.js"></script>
+</body>
+</html>
