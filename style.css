@@ -1,0 +1,107 @@
+/* Custom Professional Typography Setup */
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+font-serif, .font-serif {
+    font-family: 'Lora', serif;
+}
+
+code, .font-mono {
+    font-family: 'Space Mono', monospace;
+}
+
+/* Sidebar Navigation Active State */
+.active-nav {
+    background-color: rgba(241, 245, 249, 1);
+    color: rgba(15, 23, 42, 1) !important;
+    font-weight: 600;
+}
+
+.active-nav i {
+    color: rgba(15, 23, 42, 1) !important;
+}
+
+/* Tab Panel View Switching */
+.tab-panel {
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    display: none;
+}
+
+.tab-panel.active-panel {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Restricted / permission-denied controls.
+   Rendered as a flat neutral grey so a restricted action never looks like an
+   error (errors are red) and so the production and staging node cards match. */
+.disabled-action,
+.action-btn:disabled {
+    background-color: #e5e7eb !important;
+    border-color: #e5e7eb !important;
+    color: #94a3b8 !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+}
+
+.disabled-action:hover,
+.action-btn:disabled:hover {
+    background-color: #e5e7eb !important;
+    transform: none !important;
+}
+
+/* Tooltip / explanation shown next to restricted controls */
+.restriction-note {
+    color: #64748b;
+    line-height: 1.4;
+}
+
+/* Modal Animation */
+.modal-card {
+    animation: fadeIn 0.15s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Execution Modal — responsive layout */
+#executionOverlay .modal-card {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Disabled checkbox for Integrity Exception Switch */
+#simulateIntegrityFailure:disabled + div {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Exception alert in modal — always at bottom and visible */
+#exceptionAlert {
+    flex-shrink: 0;
+}
+
+/* Pipeline step rows — minimum height to prevent collapse */
+#executionOverlay .bg-slate-50 {
+    min-height: 50px;
+}
+
+/* Audit log table uses table-fixed, so every cell must clip its own content
+   instead of spilling into the neighbouring column. */
+#auditLogBody td {
+    overflow: hidden;
+    vertical-align: top;
+}
